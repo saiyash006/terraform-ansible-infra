@@ -1,0 +1,10 @@
+---
+- name: Configure web servers
+  hosts: all
+  become: true
+  vars_files:
+    - group_vars/all.yml
+  roles:
+    - common
+    - nginx
+    - app

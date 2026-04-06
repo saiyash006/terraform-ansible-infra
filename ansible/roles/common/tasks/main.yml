@@ -1,0 +1,31 @@
+---
+- name: Ensure deploy group exists
+  ansible.builtin.group:
+    name: "{{ deploy_user }}"
+    state: present
+
+- name: Ensure deploy user exists
+  ansible.builtin.user:
+    name: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    create_home: true
+    shell: /bin/bash
+
+- name: Allow passwordless sudo for deploy user
+  ansible.builtin.copy:
+    dest: "/etc/sudoers.d/{{ deploy_user }}"
+    content: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL\n"
+    mode: "0440"
+
+- name: Set authorized key for deploy user
+  ansible.builtin.authorized_key:
+    user: "{{ deploy_user }}"
+    key: "{{ deploy_authorized_key }}"
+  when: deploy_authorized_key | length > 0
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name:
+      - python3-venv
+      - git
+    update_cache: true

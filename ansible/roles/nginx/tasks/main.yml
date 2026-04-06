@@ -1,0 +1,38 @@
+---
+- name: Install nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Ensure app root exists
+  ansible.builtin.file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ deploy_user }}"
+    group: "{{ deploy_user }}"
+    mode: "0755"
+
+- name: Deploy nginx site
+  ansible.builtin.template:
+    src: app.conf.j2
+    dest: /etc/nginx/sites-available/app.conf
+    mode: "0644"
+
+- name: Enable site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/app.conf
+    dest: /etc/nginx/sites-enabled/app.conf
+    state: link
+    force: true
+
+- name: Remove default site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    enabled: true

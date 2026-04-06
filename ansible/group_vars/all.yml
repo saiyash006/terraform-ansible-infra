@@ -1,0 +1,6 @@
+---
+deploy_user: deploy
+deploy_authorized_key: ""  # paste your public key
+app_root: /var/www/app
+app_title: "Terraform + Ansible Demo"
+app_body: "Provisioned with Terraform, configured with Ansible."
